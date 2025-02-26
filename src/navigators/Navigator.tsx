@@ -4,6 +4,7 @@ import Home from '../views/Home';
 import Profile from '../views/Profile';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Single from '../views/Single';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -11,9 +12,26 @@ const Stack = createNativeStackNavigator();
 // Home tabs ("alareunassa")
 const TabScreen = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName = '';
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home-outline' : 'home-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person-outline' : 'person-outline';
+          }
+
+          // You can return any component that you like here!
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#49a078',
+        tabBarInactiveTintColor: 'grey',
+      })}
+    >
       <Tab.Screen
-        name="React Native Appi"
+        name="Home"
         component={Home}
         // options={{header: () => <Text>HI</Text>}}
       />

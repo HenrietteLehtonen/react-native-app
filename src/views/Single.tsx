@@ -1,38 +1,52 @@
 import React from 'react';
-import {Image, Text, View, StyleSheet} from 'react-native';
+import {MediaItemWithOwner} from 'hybrid-types/DBTypes';
+import {Image, Text, View, StyleSheet, ScrollView} from 'react-native';
 import {Video} from 'expo-av';
+import {Card, Icon, ListItem} from '@rneui/base';
 
 const Single = ({route}: any) => {
-  const {item} = route.params;
+  const item: MediaItemWithOwner = route.params.item;
   return (
-    <View>
-      {item.media_type.includes('image') ? (
-        <Image src={item.filename} style={styles.img} />
-      ) : (
-        <Video
-          source={{uri: item.filename}}
-          useNativeControls
-          style={styles.img}
-        />
-      )}
-      <Text>{item.title}</Text>
-      {/* <Likes item={item} />
+    <ScrollView>
+      <Card>
+        {item.media_type.includes('image') ? (
+          <Image style={styles.image} src={item.filename} />
+        ) : (
+          <Video
+            style={styles.image}
+            source={{uri: item.filename}}
+            useNativeControls
+          />
+        )}
+        <Card.Title>{item.title}</Card.Title>
+        <ListItem>
+          <Icon name="heart" type="font-awesome" color={'#49a078'}></Icon>
+          <Text style={styles.text}>10</Text>
+          <Icon name="star" type="font-awesome" color={'#49a078'}></Icon>
+          <Text>5</Text>
+          <Icon name="comment" color={'#49a078'}></Icon>
+          <Text>3</Text>
+          {/* <Likes item={item} />
         <Ratings item={item} />
         <CommentCount item={item} /> */}
-      <Text>Media owner:{item.username}</Text>
-      <Text>{item.description}</Text>
-      {/* <Comments item={item} /> */}
-    </View>
+          <Icon name="user-circle" type="font-awesome-5" color={'#49a078'} />
+          <Text>{item.username}</Text>
+        </ListItem>
+        <ListItem>
+          <Text>{item.description}</Text>
+          {/* <Comments item={item} /> */}
+        </ListItem>
+        <ListItem>
+          <Text>Media id: {item.media_id}</Text>
+        </ListItem>
+      </Card>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  img: {
-    maxHeight: 120,
-  },
+  image: {height: 300, marginBottom: 20},
+  text: {color: '#987654'},
 });
 
 export default Single;
