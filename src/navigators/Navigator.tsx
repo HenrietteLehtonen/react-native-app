@@ -1,3 +1,4 @@
+import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import Home from '../views/Home';
@@ -5,6 +6,8 @@ import Profile from '../views/Profile';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Single from '../views/Single';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useUserContext} from '../hooks/contextHooks';
+import Login from '../views/Login';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -40,19 +43,28 @@ const TabScreen = () => {
   );
 };
 
+// STACK NAV
 const StackScreen = () => {
+  // tallennetaan käyttäjän tiedot
+  const {user} = useUserContext();
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Tabs"
-        component={TabScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Single"
-        component={Single}
-        options={{headerTintColor: '#49a078'}}
-      />
+      {user ? (
+        <>
+          <Stack.Screen
+            name="Tabs"
+            component={TabScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Single"
+            component={Single}
+            options={{headerTintColor: '#49a078'}}
+          />
+        </>
+      ) : (
+        <Stack.Screen name="Login" component={Login} />
+      )}
     </Stack.Navigator>
   );
 };
