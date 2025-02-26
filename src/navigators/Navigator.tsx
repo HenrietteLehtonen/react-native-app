@@ -48,7 +48,11 @@ const StackScreen = () => {
         component={TabScreen}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="Single" component={Single} />
+      <Stack.Screen
+        name="Single"
+        component={Single}
+        options={{headerTintColor: '#49a078'}}
+      />
     </Stack.Navigator>
   );
 };
