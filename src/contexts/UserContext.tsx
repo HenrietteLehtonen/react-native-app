@@ -4,6 +4,7 @@ import {AuthContextType, Credentials} from '../types/LocalTypes';
 import {UserWithNoPassword} from 'hybrid-types/DBTypes';
 import {UserResponse} from 'hybrid-types/MessageTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Alert} from 'react-native';
 
 const UserContext = createContext<AuthContextType | null>(null);
 
@@ -27,6 +28,7 @@ const UserProvider = ({children}: {children: React.ReactNode}) => {
       // TODO: navigate to home
     } catch (e) {
       console.log((e as Error).message);
+      Alert.alert('Login failed!', (e as Error).message);
     }
   };
 

@@ -20,6 +20,7 @@ const LoginForm = () => {
 
   return (
     <Card>
+      <Card.Title>Login</Card.Title>
       <Controller
         control={control}
         rules={{
@@ -46,7 +47,7 @@ const LoginForm = () => {
         }}
         render={({field: {onChange, onBlur, value}}) => (
           <Input
-            placeholder="password"
+            placeholder="Password"
             secureTextEntry
             onBlur={onBlur}
             onChangeText={onChange}
@@ -56,7 +57,11 @@ const LoginForm = () => {
         )}
         name="password"
       />
-      <Button title="Login" onPress={handleSubmit(doLogin)} />
+      <Button
+        title="Login"
+        onPress={handleSubmit(doLogin)}
+        buttonStyle={{backgroundColor: '#49a078'}}
+      />
     </Card>
   );
 };
