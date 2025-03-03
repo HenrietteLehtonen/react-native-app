@@ -8,6 +8,7 @@ import Single from '../views/Single';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useUserContext} from '../hooks/contextHooks';
 import Login from '../views/Login';
+import MyFiles from '../views/MyFiles';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -59,6 +60,11 @@ const StackScreen = () => {
           <Stack.Screen
             name="Single"
             component={Single}
+            options={{headerTintColor: '#49a078'}}
+          />
+          <Stack.Screen
+            name="My Files"
+            component={MyFiles}
             options={{headerTintColor: '#49a078'}}
           />
         </>

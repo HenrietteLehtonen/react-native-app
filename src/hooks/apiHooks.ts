@@ -22,14 +22,15 @@ import {
 
 // MEDIAN KÄYTTÖ
 
-const useMedia = () => {
+const useMedia = (id?: number) => {
   const [mediaArray, setMediaArray] = useState<MediaItemWithOwner[]>([]);
+  const url = id ? '/media/byuser/' + id : '/media';
 
   useEffect(() => {
     const getMedia = async () => {
       try {
         const media = await fetchData<MediaItemWithOwner[]>(
-          process.env.EXPO_PUBLIC_MEDIA_API + '/media',
+          process.env.EXPO_PUBLIC_MEDIA_API + url,
         );
 
         const mediaWithOwner: MediaItemWithOwner[] = await Promise.all(
@@ -84,7 +85,7 @@ const useMedia = () => {
     };
     // TODO: return the data
     return await fetchData<MessageResponse>(
-      process.env.EXPO_PUBLIC_MEDIA_API + '/media',
+      process.env.EXPO_PUBLIC_MEDIA_API + url,
       options,
     );
   };
