@@ -1,22 +1,23 @@
+import React from 'react';
 import {FlatList, View} from 'react-native';
-import {useMedia} from '../hooks/apiHooks';
 import MediaListItem from '../components/MediaListItem';
+import {useMedia} from '../hooks/apiHooks';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {useUserContext} from '../hooks/contextHooks';
 
 const MyFiles = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
   const {user} = useUserContext();
-  const {mediaArray} = useMedia();
-
+  const {mediaArray} = useMedia(user?.user_id);
   return (
     <View>
       <FlatList
         data={mediaArray}
         renderItem={({item}) => (
-          <MediaListItem navigation={navigation} item={item} />
+          <MediaListItem item={item} navigation={navigation} />
         )}
       />
     </View>
   );
 };
+
 export default MyFiles;
