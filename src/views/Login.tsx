@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import RegisterForm from '../components/RegisterForm';
 import LoginForm from '../components/LoginForm';
 import {Button, Icon} from '@rneui/base';
-import React from 'react'; // Add this line
+import React from 'react';
 import {ScrollView} from 'react-native';
 import {useUserContext} from '../hooks/contextHooks';
 

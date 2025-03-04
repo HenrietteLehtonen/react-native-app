@@ -64,7 +64,7 @@ const RegisterForm = ({
             try {
               const {available} = await getUsernameAvailable(value);
               console.log('available?', available);
-              return available ? true : 'username not available';
+              return available ? true : 'Username not available';
             } catch (e) {
               console.error((e as Error).message);
               return true;
@@ -133,9 +133,18 @@ const RegisterForm = ({
             value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
             message: 'not a valid email',
           },
-          // TODO;: ADD validation to email!!
           maxLength: 100,
           required: {value: true, message: 'is required'},
+          validate: async (value) => {
+            try {
+              const {available} = await getEmailAvailable(value);
+              console.log('email available?', available);
+              return available ? true : 'Email not available';
+            } catch (e) {
+              console.error((e as Error).message);
+              return true;
+            }
+          },
         }}
         render={({field: {onChange, onBlur, value}}) => (
           <Input
