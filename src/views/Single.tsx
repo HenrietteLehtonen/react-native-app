@@ -1,12 +1,34 @@
 import React from 'react';
 import {MediaItemWithOwner} from 'hybrid-types/DBTypes';
-import {Image, Text, View, StyleSheet, ScrollView} from 'react-native';
+import {Image, Text, View, StyleSheet, ScrollView, Alert} from 'react-native';
 import {Video} from 'expo-av';
-import {Card, Icon, ListItem} from '@rneui/base';
+import {Button, Card, Icon, ListItem} from '@rneui/base';
 import Comments from '../components/Comments';
+import {useMedia} from '../hooks/apiHooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useUpdateContext, useUserContext} from '../hooks/contextHooks';
+import {useNavigation} from '@react-navigation/native';
 
 const Single = ({route}: any) => {
   const item: MediaItemWithOwner = route.params.item;
+  const {deleteMedia} = useMedia();
+  const {user} = useUserContext();
+  const {triggerUpdate} = useUpdateContext();
+  const navigation = useNavigation();
+
+  // median poisto
+  const handleDelete = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      if (!token) {
+        return;
+      }
+      await deleteMedia(item.media_id, token);
+      triggerUpdate();
+      Alert.alert('Succes', 'Media deleted');
+      navigation.goBack();
+    } catch {}
+  };
   return (
     <ScrollView>
       <Card>
@@ -40,6 +62,16 @@ const Single = ({route}: any) => {
           <Text>Media id: {item.media_id}</Text>
         </ListItem>
         <Comments item={item} />
+        <ListItem>
+          {/* jos user ja user id = item user_id delete nappi näkyy */}
+          {user && user.user_id === item.user_id && (
+            <Button
+              title="Delete"
+              color="warning"
+              onPress={handleDelete}
+            ></Button>
+          )}
+        </ListItem>
       </Card>
     </ScrollView>
   );

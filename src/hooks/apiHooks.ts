@@ -20,15 +20,19 @@ import {
   UserResponse,
 } from 'hybrid-types/MessageTypes';
 import * as FileSystem from 'expo-file-system';
+import {useUpdateContext} from './contextHooks';
 
 // MEDIAN KÄYTTÖ
 
 const useMedia = (id?: number) => {
   const [mediaArray, setMediaArray] = useState<MediaItemWithOwner[]>([]);
+  const {update} = useUpdateContext();
+  const [loading, setLoading] = useState(false);
   const url = id ? '/media/byuser/' + id : '/media';
 
   useEffect(() => {
     const getMedia = async () => {
+      setLoading(true);
       try {
         const media = await fetchData<MediaItemWithOwner[]>(
           process.env.EXPO_PUBLIC_MEDIA_API + url,
@@ -52,11 +56,13 @@ const useMedia = (id?: number) => {
         setMediaArray(mediaWithOwner);
       } catch (error) {
         console.error((error as Error).message);
+      } finally {
+        setLoading(false);
       }
     };
 
     getMedia();
-  }, []);
+  }, [update]);
 
   const postMedia = async (
     file: UploadResponse,
@@ -90,13 +96,29 @@ const useMedia = (id?: number) => {
       options,
     );
   };
-  return {mediaArray, postMedia};
+
+  // DELETE MEDIA
+  const deleteMedia = async (media_id: number, token: string) => {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    };
+    // return the data
+    return await fetchData<MessageResponse>(
+      process.env.EXPO_PUBLIC_MEDIA_API + '/media/' + media_id,
+      options,
+    );
+  };
+
+  return {mediaArray, postMedia, loading, deleteMedia};
 };
 
 // FILE
 
 const useFile = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const postExpoFile = async (
     imageUri: string,
@@ -121,7 +143,7 @@ const useFile = () => {
     return fileResult.body ? JSON.parse(fileResult.body) : null;
   };
 
-  return {postExpoFile};
+  return {postExpoFile, loading};
 };
 
 // AUTENTIKOINTI

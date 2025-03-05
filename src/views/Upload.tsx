@@ -9,6 +9,7 @@ import {useFile, useMedia} from '../hooks/apiHooks';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {NavigatorType} from '../types/LocalTypes';
+import {useUpdateContext} from '../hooks/contextHooks';
 
 type uploadInputs = {
   title: string;
@@ -31,14 +32,17 @@ const Upload = () => {
     defaultValues: initValues,
   });
 
+  const [loading, setLoading] = useState(false);
   const {postExpoFile} = useFile();
   const {postMedia} = useMedia();
   const navigation = useNavigation<NativeStackNavigationProp<NavigatorType>>();
+  const {triggerUpdate} = useUpdateContext();
 
   // formin resetointi
   const resetForm = () => {
     setImage(null);
     reset(initValues);
+    setLoading(false); // ei tässä
   };
 
   const doUpload = async (inputs: uploadInputs) => {
@@ -64,6 +68,7 @@ const Upload = () => {
     // reset the form and navigate to Home tab
 
     navigation.navigate('Home');
+    triggerUpdate();
     resetForm();
   };
 

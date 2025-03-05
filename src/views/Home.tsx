@@ -2,11 +2,18 @@ import {FlatList, View} from 'react-native';
 import {useMedia} from '../hooks/apiHooks';
 import MediaListItem from '../components/MediaListItem';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
+import {useUpdateContext} from '../hooks/contextHooks';
 
 const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
-  const {mediaArray} = useMedia();
+  const {mediaArray, loading} = useMedia();
+  const {setUpdate} = useUpdateContext();
 
   console.log(mediaArray);
+
+  // rullan käyttö
+  const onRefresh = () => {
+    setUpdate((update) => !update);
+  };
 
   return (
     <View>
@@ -15,6 +22,8 @@ const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
         renderItem={({item}) => (
           <MediaListItem navigation={navigation} item={item} />
         )}
+        onRefresh={onRefresh}
+        refreshing={loading}
       />
     </View>
   );
