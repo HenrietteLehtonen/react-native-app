@@ -19,6 +19,7 @@ import {
   UploadResponse,
   UserResponse,
 } from 'hybrid-types/MessageTypes';
+import * as FileSystem from 'expo-file-system';
 
 // MEDIAN KÄYTTÖ
 
@@ -47,7 +48,7 @@ const useMedia = (id?: number) => {
             return mediaItem;
           }),
         );
-
+        mediaWithOwner.reverse(); //  uusimmat postaukset ekaks
         setMediaArray(mediaWithOwner);
       } catch (error) {
         console.error((error as Error).message);
@@ -95,25 +96,32 @@ const useMedia = (id?: number) => {
 // FILE
 
 const useFile = () => {
-  const postFile = async (file: File, token: string) => {
-    console.log('post file token:', token);
-    // create FormData object
-    const formData = new FormData();
-    // add file to FormData
-    formData.append('file', file);
-    // upload the file to file server and get the file data POST
-    const options = {
-      method: 'POST',
-      headers: {Authorization: 'Bearer ' + token},
-      body: formData,
-    };
-    // return the file data. The type is UploadResponse
-    return await fetchData<UploadResponse>(
+  const [loading, setLoading] = useState(true);
+
+  const postExpoFile = async (
+    imageUri: string,
+    token: string,
+  ): Promise<UploadResponse> => {
+    // TODO: display loading indicator
+    setLoading(true);
+    const fileResult = await FileSystem.uploadAsync(
       process.env.EXPO_PUBLIC_UPLOAD_API + '/upload',
-      options,
+      imageUri,
+      {
+        httpMethod: 'POST',
+        uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+        fieldName: 'file',
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      },
     );
+    // TODO: hide loading indicator
+    setLoading(false);
+    return fileResult.body ? JSON.parse(fileResult.body) : null;
   };
-  return {postFile};
+
+  return {postExpoFile};
 };
 
 // AUTENTIKOINTI
@@ -203,7 +211,7 @@ const useUser = () => {
 // TYKKÄYKSET
 const useLike = () => {
   const postLike = async (media_id: number, token: string) => {
-    // TODO: Send a POST request to /likes with object { media_id } and the token in the Authorization header.
+    // Send a POST request to /likes with object { media_id } and the token in the Authorization header.
     const options = {
       method: 'POST',
       headers: {
@@ -212,7 +220,7 @@ const useLike = () => {
       },
       body: JSON.stringify({media_id}), //{media_id: media_id params -> reduced}
     };
-    // TODO: return the data
+    // return the data
     return await fetchData<MessageResponse>(
       process.env.EXPO_PUBLIC_MEDIA_API + '/likes',
       options,
@@ -314,7 +322,7 @@ const useComment = () => {
 // RATINGS
 
 const useRating = () => {
-  // ratingit per media
+  //average ratingit per media
   const getAverageRating = async (id: number) => {
     return await fetchData<{average: number}>(
       process.env.EXPO_PUBLIC_MEDIA_API + '/ratings/average/' + id,

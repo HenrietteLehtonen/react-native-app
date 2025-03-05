@@ -2,15 +2,18 @@
 import React from 'react';
 import {MediaItemWithOwner} from 'hybrid-types/DBTypes';
 import {useUserContext} from '../hooks/contextHooks';
-import {useForm} from '../hooks/formHooks';
+import {Controller, useForm} from 'react-hook-form'; // lomake
 import {useCommentStore} from '../store';
-import {useEffect, useRef} from 'react';
+import {useEffect} from 'react';
 import {useComment} from '../hooks/apiHooks';
+import {View} from 'react-native';
+import {Text, Input, ListItem} from '@rneui/base';
+
+type commentInputs = {
+  comment_text: string;
+};
 
 const Comments = ({item}: {item: MediaItemWithOwner}) => {
-  //
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
   // haetaan kirjautumistieto usercontekstista
   const user = useUserContext();
   // kommentit zustand storesta
@@ -22,27 +25,28 @@ const Comments = ({item}: {item: MediaItemWithOwner}) => {
   // kommentin lähettäminen
   // alkuarvo formille
   const initValues = {comment_text: ''};
+  const {
+    control,
+    handleSubmit, // lähetys
+    formState: {errors},
+  } = useForm({
+    defaultValues: initValues,
+  });
 
-  const doComment = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return;
-    }
-    // postatataan kommentti
-    await postComment(inputs.comment_text, item.media_id, token);
-    getComments();
-    // tyhjennä form
-    if (inputRef.current) {
-      inputRef.current.value = '';
-    }
-    setInputs(initValues);
-  };
-
-  // formin käsittely form hookilla
-  const {handleSubmit, handleInputChange, inputs, setInputs} = useForm(
-    doComment,
-    initValues,
-  );
+  // const doComment = async (inputs: commentInputs) => {
+  //   const token = localStorage.getItem('token');
+  //   if (!token) {
+  //     return;
+  //   }
+  //   // postatataan kommentti
+  //   await postComment(inputs.comment_text, item.media_id, token);
+  //   getComments();
+  //   // tyhjennä form
+  //   if (inputRef.current) {
+  //     inputRef.current.value = '';
+  //   }
+  //   setInputs(initValues);
+  // };
 
   // haetaan kommentit
   const getComments = async () => {
@@ -59,65 +63,51 @@ const Comments = ({item}: {item: MediaItemWithOwner}) => {
     getComments();
   }, [item]); // aina kun item vaihtuu ajetaan getComments uusiks
 
-  //haetaan kommenttien määrä
-  // const getCommentCount = async () => {
-  //   try {
-  //     const count = await getCommentCountByMediaId(item.media_id);
-  //     setCommentCount(count.count);
-  //   } catch (error) {
-  //     console.error((error as Error).message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getComments();
-  //   getCommentCount();
-  // }, [item]);
-
   return (
     <>
+      {/* Jos kirjautunut sisään voi kommentoida */}
       {user && (
-        <form
-          onSubmit={handleSubmit}
-          className="my-5 flex w-1/2 flex-col gap-5"
-        >
-          <div className="flex flex-col">
-            <label htmlFor="comment_text"></label>
-            <input
-              className="my-2 rounded-md border border-emerald-600 p-2.5"
-              name="comment_text"
-              type="text"
-              id="comment_text"
-              onChange={handleInputChange}
-              autoComplete="username"
-              ref={inputRef}
-              placeholder="Lisää kommentti:"
-            />
-          </div>
-          {/* <div>{commentCount}</div> */}
-
-          <button
-            disabled={inputs.comment_text.length == 0}
-            className="cursor-pointer rounded-3xl bg-emerald-600 p-2 text-stone-50 transition-all duration-300 ease-in-out hover:bg-emerald-800"
-          >
-            Lähetä
-          </button>
-        </form>
+        <View>
+          <Text>Kommentit</Text>
+          {/* Kommenttien controlleri */}
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+              required: {value: true, message: 'is required'},
+              minLength: {value: 5, message: 'min 5 char'},
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <Input
+                placeholder="Description"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.comment_text?.message}
+              />
+            )}
+            name="comment_text"
+          />
+        </View>
       )}
-      <h2 className="flex w-1/2 flex-col gap-5">Kommentit</h2>
+      <View>
+        <Text>Kommentit</Text>
+      </View>
       {comments.length > 0 && (
-        <ul className="mb-8 flex w-1/2 flex-col gap-5">
-          {comments.map((comment) => (
-            <li key={comment.comment_id}>
-              <strong>{comment.username} </strong>
-              <span className="text-stone-500">
-                ({new Date(comment.created_at || '').toLocaleString('fi-FI')})
-              </span>
-              <br></br>
-              {comment.comment_text}
-            </li>
-          ))}
-        </ul>
+        <ListItem>
+          <ListItem.Content>
+            {comments.map((comment) => (
+              <li key={comment.comment_id}>
+                <strong>{comment.username} </strong>
+                <span className="text-stone-500">
+                  ({new Date(comment.created_at || '').toLocaleString('fi-FI')})
+                </span>
+                <br></br>
+                {comment.comment_text}
+              </li>
+            ))}
+          </ListItem.Content>
+        </ListItem>
       )}
     </>
   );

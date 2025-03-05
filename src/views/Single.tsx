@@ -3,6 +3,7 @@ import {MediaItemWithOwner} from 'hybrid-types/DBTypes';
 import {Image, Text, View, StyleSheet, ScrollView} from 'react-native';
 import {Video} from 'expo-av';
 import {Card, Icon, ListItem} from '@rneui/base';
+import Comments from '../components/Comments';
 
 const Single = ({route}: any) => {
   const item: MediaItemWithOwner = route.params.item;
@@ -34,11 +35,11 @@ const Single = ({route}: any) => {
         </ListItem>
         <ListItem>
           <Text>{item.description}</Text>
-          {/* <Comments item={item} /> */}
         </ListItem>
         <ListItem>
           <Text>Media id: {item.media_id}</Text>
         </ListItem>
+        <Comments item={item} />
       </Card>
     </ScrollView>
   );

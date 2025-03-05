@@ -9,9 +9,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useUserContext} from '../hooks/contextHooks';
 import Login from '../views/Login';
 import MyFiles from '../views/MyFiles';
+import Upload from '../views/Upload';
+import {NavigatorType} from '../types/LocalTypes';
 
-const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator<NavigatorType>();
+const Stack = createNativeStackNavigator<NavigatorType>();
 
 // Home tabs ("alareunassa")
 const TabScreen = () => {
@@ -22,9 +24,11 @@ const TabScreen = () => {
           let iconName = '';
 
           if (route.name === 'Home') {
-            iconName = focused ? 'home-outline' : 'home-outline';
+            iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Profile') {
-            iconName = focused ? 'person-outline' : 'person-outline';
+            iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'Upload') {
+            iconName = focused ? 'cloud-upload' : 'cloud-upload-outline';
           }
 
           // You can return any component that you like here!
@@ -40,6 +44,7 @@ const TabScreen = () => {
         // options={{header: () => <Text>HI</Text>}}
       />
       <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Upload" component={Upload} />
     </Tab.Navigator>
   );
 };
